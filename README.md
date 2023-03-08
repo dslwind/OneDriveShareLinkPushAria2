@@ -3,9 +3,11 @@
 从OneDrive或SharePoint共享链接提取下载URL并将其推送到aria2，即使在无图形界面的系统中依然可以使用。
 
 ## 依赖
-requests==2.25.1
-
-pyppeteer==0.2.5
+```
+requests
+pyppeteer
+```
+需要安装aria2，并保持开启状态。Windows下可以使用Motrix，Linux系统安装配置参考[Aria2 一键安装管理脚本 增强版](https://github.com/P3TERX/aria2.sh)。
 
 ## 特点
 目前本程序支持的下载方式：
@@ -23,7 +25,7 @@ pyppeteer==0.2.5
 ## 使用说明
 ```bash
 python main.py --help
-usage: main.py [-h] [-d DOWNLOAD] [-f FILELIST] url
+usage: main.py [-h] [-d DOWNLOAD] [-f FILELIST] [-p PASSWORD] url
 
 positional arguments:
   url                   分享链接
@@ -34,23 +36,24 @@ options:
                         是否下载
   -f FILELIST, --filelist FILELIST
                         文件列表
+  -p PASSWORD, --password PASSWORD
+                        密码                        
 ```
 ### 参数说明
 * -d, --download: 是否下载文件，默认为`True`；如果为`False`，则只输出文件列表
+* -p, --password：分享链接的密码，仅适用于带密码的链接，默认为空
 * -f, --filelist: 要下载的文件列表，默认为**0**，表示下载所有文件
+  * 如果想要下载第二个文件，则需要`-f 2`
 
-  如果想要下载第二个文件，则需要`-f 2`
+  * 如果想要下载第二、第三个文件，则需要`-f 2-3`
 
-  如果想要下载第二、第三个文件，则需要`-f 2-3`
-
-  如果想要下载第二、第三、第四、第七个文件，则需要`-f 2-4,7`
+  * 如果想要下载第二、第三、第四、第七个文件，则需要`-f 2-4,7`
 
   以此类推。
 
-
-[main.py](../main.py) 中还定义了一些配置参数：
+[main.py](main.py) 中还定义了一些配置参数：
 * `aria2_link: aria2` 的rpc地址，如果是本机，一般是 `http://localhost:端口号/jsonrpc`
-* `aria2_secret`: aria2 的密码
+* `aria2_secret`: aria2 的密码，默认为空
 
 ## 输出文件列表
 
@@ -65,21 +68,3 @@ python main.py [url] -d False > list.txt
 ``` bash
 [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 ```
-
-## 无密码的链接
-
-```
-python main.py url
-```
-
-确保目标aria2处于开启状态，执行
-
-<!-- ## 有密码的链接
-
-此时需要使用有密码的下载代码，也就是[havepassword.py](../havepassword.py)，打开这个文件，可以看到有一些全局变量（重复的不再赘述）：
-* OneDriveSharePwd: OneDrive链接的密码
-  
-使用方法和上面类似。
-
-# 注意
-使用前，使用 `git clone https://github.com/dslwind/OneDriveShareLinkPushAria2.git` 将项目整个克隆，才能使用，`havepassword.py`依赖于`main.py`，如果要使用需要密码的版本，需要 `pip install pyppeteer` -->
