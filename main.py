@@ -336,8 +336,6 @@ def download_files(original_path,
                            num=num,
                            _id=file_count,
                            original_dir=original_dir)
-            # fileCount += downloadFiles(originalPath, req, layers+1,
-            #                            aria2URL, token, num=num, _id=fileCount, originalDir=originalDir)
         else:
             file_count += 1
             # print(num)
@@ -464,7 +462,7 @@ def main():
     parser.add_argument('-f', '--filelist', default="0", help='文件列表')
     args = parser.parse_args()
 
-    aria2_link = "http://localhost:16800/jsonrpc"
+    aria2_link = "http://localhost:6800/jsonrpc"
     aria2_secret = ""
 
     # print(args.download == True)

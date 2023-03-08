@@ -1,81 +1,85 @@
-[简体中文](docs/Readme_zh-cn.md)
-
 # OneDriveShareLinkPushAria2
-Extract download URLs from OneDrive or SharePoint share links and push them to aria2, even on systems without a GUI (such as Linux).
 
-从OneDrive或SharePoint共享链接提取下载URL并将其推送到aria2，即使在无图形界面的系统中(如Linux)依然可以使用。
+从OneDrive或SharePoint共享链接提取下载URL并将其推送到aria2，即使在无图形界面的系统中依然可以使用。
 
-# Dependent
-
+## 依赖
 requests==2.25.1
 
 pyppeteer==0.2.5
 
-# Feature
+## 特点
+目前本程序支持的下载方式：
+* xxx-my.sharepoint.com 下载链接的下载
+  * 无下载密码的多文件推送
+  * 有下载密码的多文件推送
+  * 嵌套文件夹的文件推送
+  * 任意选择文件推送
+  * 针对超多文件（超过30个）的分享链接，实现了的遍历查看和下载
+* xxx.sharepoint.com 下载链接的下载
+* xxx-my.sharepoint.cn 下载链接的下载(理论上支持)
 
-At present, this program supports the following download methods:
+**注意：Aria2本身不支持HTTP POST型的下载链接，而OneDrive文件夹打包下载为HTTP POST型的下载链接，所以本程序将不会支持OneDrive文件夹打包下载**
 
-* xxx-my.sharepoint.com Download of share links
-  * Downloading multiple files without password for shared links
-  * Downloading multiple files with password for shared links
-  * Download of files in nested folders
-  * Download any file of your choice
-  * Traversal view and download for multiple files (more than 30) of shared links
-* xxx.sharepoint.com Downloads with share links
-* xxx-my.sharepoint.cn Download of share links (theoretically supported)
+## 使用说明
+```bash
+python main.py --help
+usage: main.py [-h] [-d DOWNLOAD] [-f FILELIST] url
 
-**Note: aria2 itself does not support HTTP POST download links, while onedrive folder package download is HTTP POST download links, so this program will not support onedrive folder package download**
+positional arguments:
+  url                   分享链接
 
-## Output file list
+options:
+  -h, --help            show this help message and exit
+  -d DOWNLOAD, --download DOWNLOAD
+                        是否下载
+  -f FILELIST, --filelist FILELIST
+                        文件列表
+```
+### 参数说明
+* -d, --download: 是否下载文件，默认为`True`；如果为`False`，则只输出文件列表
+* -f, --filelist: 要下载的文件列表，默认为**0**，表示下载所有文件
 
-input this command then you can get file list in list.txt
+  如果想要下载第二个文件，则需要`-f 2`
+
+  如果想要下载第二、第三个文件，则需要`-f 2-3`
+
+  如果想要下载第二、第三、第四、第七个文件，则需要`-f 2-4,7`
+
+  以此类推。
+
+
+[main.py](../main.py) 中还定义了一些配置参数：
+* `aria2_link: aria2` 的rpc地址，如果是本机，一般是 `http://localhost:端口号/jsonrpc`
+* `aria2_secret`: aria2 的密码
+
+## 输出文件列表
+
+使用以下命令输出文件列表到list.txt
 
 ``` bash
-python main.py > list.txt
+python main.py [url] -d False > list.txt
 ```
 
-It maybe output gibberish in powershell, you can input this command before to fix
+使用powershell运行此命令可能会输出乱码, 先运行以下命令即可修复
 
 ``` bash
 [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 ```
 
-## Without password for shared links
+## 无密码的链接
 
-Take this download link as an example:
+```
+python main.py url
+```
 
-https://gitaccuacnz2-my.sharepoint.com/:f:/g/personal/mail_finderacg_com/EheQwACFhe9JuGUn4hlg9esBsKyk5jp9-Iz69kqzLLF5Xw?e=FG7SHh
+确保目标aria2处于开启状态，执行
 
-At this time, you need to use the download code for no password link, that is, [main.py](main.py). Open this file and you can see that there are some global variables:
-* OneDriveShareURL: The download address, which should be filled in here https://gitaccuacnz2-my.sharepoint.com/:f:/g/personal/mail_finderacg_com/EheQwACFhe9JuGUn4hlg9esBsKyk5jp9-Iz69kqzLLF5Xw?e=FG7SHh
-* aria2Link: aria2's rpc address, usually `http://localhost:Port/jsonrpc` if it's native
-* aria2Secret: the password of aria2
-* isDownload: whether to download or not, if `False`, only the file list is output
-* downloadNum: List of files to download, **0** means all of them 
+<!-- ## 有密码的链接
 
-If you want to download the second file, you need `downloadNum="2"`
-
-If you want to download the second and third file, you need `downloadNum="2-3"`
-
-If you want to download the second, third, fourth, seventh file, you need `downloadNum="2-4,7"`
-
-and so on.
-
-After modifying, make sure the target aria2 is on and execute `python3 main.py`
-
-
-## With password for shared links
-
-Take this download link as an example:
-
-https://jia666-my.sharepoint.com/:f:/g/personal/1025_xkx_me/EsqNMFlDoyZKt-RGcsI1F2EB6AiQMBIpQM4Ka247KkyOQw?e=oC1y7r
-
-At this time, you need to use the download code for have password link, that is, [havepassword.py](havepassword.py). Open this file and you can see that there are some global variables (repeated without further ado):
-* OneDriveSharePwd: Password for the OneDrive link
+此时需要使用有密码的下载代码，也就是[havepassword.py](../havepassword.py)，打开这个文件，可以看到有一些全局变量（重复的不再赘述）：
+* OneDriveSharePwd: OneDrive链接的密码
   
-Usage is similar to the above.
+使用方法和上面类似。
 
-# Note
-Before you use it, clone the whole project with `git clone https://github.com/gaowanliang/OneDriveShareLinkPushAria2.git` to use it. havepassword.py depends on main.py, if you want to use the version that requires a password If you want to use a version that requires a password, you need to `pip install pyppeteer`
-
-The basic functions of this program have been realized. For a long time, if the software is not unusable, it will not be maintained. If there is a running problem, please bring a download link when raising the issue. The bug type issue that does not provide a download link will not be solved.
+# 注意
+使用前，使用 `git clone https://github.com/dslwind/OneDriveShareLinkPushAria2.git` 将项目整个克隆，才能使用，`havepassword.py`依赖于`main.py`，如果要使用需要密码的版本，需要 `pip install pyppeteer` -->
