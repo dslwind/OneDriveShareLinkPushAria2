@@ -1,8 +1,9 @@
-import os
 import asyncio
-from main import getFiles, downloadFiles, header,wildcardsMatchFiles
+import os
 from pprint import pprint
 
+from main import download_files, get_files, header, wildcards_match_files
+from pyppeteer import launch
 
 OneDriveShareURL = "https://jia666-my.sharepoint.com/:f:/g/personal/1025_xkx_me/EsqNMFlDoyZKt-RGcsI1F2EB6AiQMBIpQM4Ka247KkyOQw?e=oC1y7r"
 OneDriveSharePwd = "xkx"
@@ -13,11 +14,8 @@ aria2Secret = "123456"
 isDownload = False
 downloadNum = "1,2-4,5"  # 1,2,3,4,5
 
-
 os.environ['PYPPETEER_HOME'] = os.path.split(os.path.realpath(__file__))[0]
 # os.environ['PYPPETEER_DOWNLOAD_HOST'] = "http://npm.taobao.org/mirrors"
-
-from pyppeteer import launch
 
 pheader = {}
 url = ""
@@ -56,7 +54,7 @@ def havePwdGetFiles(iurl, password):
     print("无头浏览器关闭，正在获取文件列表")
     print()
     header['cookie'] = pheader
-    print(getFiles(url, None, 0))
+    print(get_files(url, None, 0))
 
 
 def havePwdDownloadFiles(iurl, password, aria2URL, token, num=-1):
@@ -65,12 +63,15 @@ def havePwdDownloadFiles(iurl, password, aria2URL, token, num=-1):
     asyncio.get_event_loop().run_until_complete(main(iurl, password))
     print("无头浏览器关闭，正在获取文件列表")
     header['cookie'] = pheader
-    downloadFiles(url, None, 0, aria2URL, token, num=num)
+    download_files(url, None, 0, aria2URL, token, num=num)
 
 
 if __name__ == "__main__":
     if isDownload:
-        havePwdDownloadFiles(OneDriveShareURL, OneDriveSharePwd, aria2Link,
-                             aria2Secret, num=wildcardsMatchFiles(downloadNum))
+        havePwdDownloadFiles(OneDriveShareURL,
+                             OneDriveSharePwd,
+                             aria2Link,
+                             aria2Secret,
+                             num=wildcards_match_files(downloadNum))
     else:
         havePwdGetFiles(OneDriveShareURL, OneDriveSharePwd)
